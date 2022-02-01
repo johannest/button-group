@@ -1,26 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.vaadin.addons</groupId>
-    <artifactId>addon-flow</artifactId>
+    <groupId>org.vaadin.addons.johannest</groupId>
+    <artifactId>button-group-flow</artifactId>
     <version>1.0.0</version>
-    <name>Add-on for Vaadin</name>
-    <description>###Project Name###</description>
+    <name>ButtonGroup for V14</name>
+    <description>ButtonGroup</description>
 
     <properties>
-        <vaadin.version>22.0.4</vaadin.version>
-
+        <vaadin.version>14.8.3</vaadin.version>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <project.reporting.outputEncoding>UTF-8
-        </project.reporting.outputEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     </properties>
     <organization>
-        <name>###author###</name>
+        <name>Johannes Tuikkala</name>
     </organization>
     <licenses>
         <license>
@@ -92,23 +89,13 @@
     <dependencies>
         <dependency>
             <groupId>com.vaadin</groupId>
-            <!-- Consider limiting the dependencies to flow-server only something, but for most end users depending on vaadin-core is ok -->
-            <artifactId>vaadin-core</artifactId>
+            <!-- Replace artifactId with vaadin-core to use only free components -->
+            <artifactId>vaadin</artifactId>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.vaadin</groupId>
-            <artifactId>vaadin-testbench</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>io.github.bonigarcia</groupId>
-            <artifactId>webdrivermanager</artifactId>
-            <version>3.8.1</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -125,8 +112,7 @@
                         <index>true</index>
                         <manifest>
                             <addClasspath>false</addClasspath>
-                            <addDefaultImplementationEntries>true
-                            </addDefaultImplementationEntries>
+                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
                         </manifest>
                         <manifestEntries>
                             <Vaadin-Package-Version>1</Vaadin-Package-Version>
@@ -138,7 +124,7 @@
             <plugin>
                 <groupId>org.eclipse.jetty</groupId>
                 <artifactId>jetty-maven-plugin</artifactId>
-                <version>9.4.28.v20200408</version>
+                <version>9.4.31.v20200723</version>
                 <configuration>
                     <scanIntervalSeconds>-1</scanIntervalSeconds>
                     <!-- Use test scope because the UI/test classes are in
@@ -149,59 +135,10 @@
                     </supportedPackagings>
                 </configuration>
             </plugin>
-
-            <!--
-             Take care of synchronizing java dependencies and imports in
-             package.json and main.js files.
-             It also creates webpack.config.js if not exists yet.
-             -->
-            <plugin>
-                <groupId>com.vaadin</groupId>
-                <artifactId>vaadin-maven-plugin</artifactId>
-                <version>${vaadin.version}</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>prepare-frontend</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
         </plugins>
     </build>
 
     <profiles>
-        <profile>
-            <!-- Production mode is activated using -Pproduction -->
-            <id>production</id>
-            <properties>
-                <vaadin.productionMode>true</vaadin.productionMode>
-            </properties>
-
-            <dependencies>
-                <dependency>
-                    <groupId>com.vaadin</groupId>
-                    <artifactId>flow-server-production-mode</artifactId>
-                </dependency>
-            </dependencies>
-
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>com.vaadin</groupId>
-                        <artifactId>vaadin-maven-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <goals>
-                                    <goal>build-frontend</goal>
-                                </goals>
-                                <phase>compile</phase>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
         <profile>
             <id>directory</id>
             <build>
@@ -209,7 +146,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-assembly-plugin</artifactId>
-                        <version>3.1.0</version>
+                        <version>3.2.0</version>
                         <configuration>
                             <appendAssemblyId>false</appendAssemblyId>
                             <descriptors>
@@ -264,73 +201,8 @@
                         <configuration>
                             <!-- Generated file that shouldn't be included in add-ons -->
                             <excludes>
-                                <exclude>
-                                    META-INF/VAADIN/config/flow-build-info.json
-                                </exclude>
+                                <exclude>META-INF/VAADIN/config/flow-build-info.json</exclude>
                             </excludes>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-        <profile>
-            <id>it</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.eclipse.jetty</groupId>
-                        <artifactId>jetty-maven-plugin</artifactId>
-                        <configuration>
-                            <scanIntervalSeconds>0</scanIntervalSeconds>
-                            <stopPort>8081</stopPort>
-                            <useTestScope>true</useTestScope>
-                            <supportedPackagings>
-                                <supportedPackaging>jar</supportedPackaging>
-                            </supportedPackagings>
-                            <stopWait>15</stopWait>
-                            <stopKey>${project.artifactId}</stopKey>
-                        </configuration>
-                        <executions>
-                            <execution>
-                                <id>start-jetty</id>
-                                <phase>pre-integration-test</phase>
-                                <goals>
-                                    <goal>start</goal>
-                                </goals>
-                            </execution>
-                            <execution>
-                                <id>stop-jetty</id>
-                                <phase>post-integration-test</phase>
-                                <goals>
-                                    <goal>stop</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-
-                    <plugin>
-                        <artifactId>maven-surefire-plugin</artifactId>
-                        <configuration>
-                            <skip>true</skip>
-                        </configuration>
-                    </plugin>
-
-                    <!-- Runs the integration tests (*IT) after the server is started -->
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-failsafe-plugin</artifactId>
-                        <version>2.22.2</version>
-                        <executions>
-                            <execution>
-                                <goals>
-                                    <goal>integration-test</goal>
-                                    <goal>verify</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                        <configuration>
-                            <trimStackTrace>false</trimStackTrace>
-                            <enableAssertions>true</enableAssertions>
                         </configuration>
                     </plugin>
                 </plugins>
@@ -338,5 +210,4 @@
         </profile>
     </profiles>
 </project>
-
 
